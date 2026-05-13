@@ -22,6 +22,10 @@ app.use(
     allowedHeaders: ["Authorization", "Content-Type"],
   }),
 );
+// import the routers
+import router from "./routes/healthcheack.routes.js";
+
+app.use('/api/v1/healthcheck',router)
 
 app.get("/instagram", (req, res) => {
   res.send("You opened a instagram account");
