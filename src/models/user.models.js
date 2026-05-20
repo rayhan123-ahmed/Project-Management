@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
+import bcrypt from 'bcrypt'
 
-const user = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     avater: {
       type: {
@@ -61,5 +62,11 @@ const user = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+userSchema.pre('save', async function (next) {
+    if(!this.isModified('password')) return next()
+    this.password = await bcrypt.hash(this.password,10);
+    next()
+})
 
 export default user;
