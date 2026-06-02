@@ -1,4 +1,43 @@
+import { text } from "express";
 import Mailgen from "mailgen";
+import nodemailer from "nodemailer";
+
+const sendEmail = async (Options) => {
+  const mailGenerator = new Mailgen({
+    theme: "default",
+    product: {
+      name: "task manager",
+      link: "https://taskmangelink.com",
+    },
+  });
+
+  const emailTextual = mailGenerator.generatePlaintext(Options.mailgenContent);
+  const emailHtml = mailGenerator.generate(Options.mailgenContent);
+
+  const transport = nodemailer.createTransport({
+    host: process.env.MAILTRAP_SMTP_HOST,
+    port: process.env.MAILTRAP_SMTP_PORT,
+    auth: {
+      user: process.env.MAILTRAP_SMTP_USER,
+      pass: process.env.MAILTRAP_SMTP_PASS,
+    },
+  });
+
+  const mail = {
+    from: "rmd09181@gmail.com",
+    to: Options.email,
+    subject: Options.subject,
+    text: Options.emailTextual,
+    html: Options.emailHtml,
+  };
+
+  try {
+    await transporter.sendEmail(mail);
+  } catch (error) {
+    console.error("your email service failed silenty");
+  }
+};
+
 
 const emailVerificationMailgenContent = (userName,VerifationUrl)=>{
     return {
