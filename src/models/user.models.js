@@ -114,5 +114,6 @@ userSchema.methods.genrateRefreshToken = function () {
 
     return {unHashedToken, hashedToken, tokenExpiry}
  }
-
-export default user;
+ 
+const User = mongoose.model("User", userSchema);
+export default User;
