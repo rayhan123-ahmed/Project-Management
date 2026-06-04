@@ -4,14 +4,17 @@ import { ApiError } from "../utils/api-response.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { emailVerificationMailgenContent, sendEmail } from "../utils/mail";
 
+
+// when user login access token and refresh token will be create
 const genrateAccesAndRefreshTokens = async (userId) => {
   try {
-    const user = User.findById(userId);
+    const user = await User.findById(userId);
     const refreshToken = user.genrateRefreshToken();
     const accessToken = user.genrateAccessToken();
 
     user.refreshToken = refreshToken;
-    user.save({ validateBeforesave: false });
+    // Save the user in the database, but don't check all the validation rules again.
+    await user.save({ validateBeforeSave: false });
     return { accessToken, refreshToken };
   } catch (error) {
     throw new ApiError(
@@ -47,17 +50,17 @@ const registerUser = asyncHandler(async (req, res) => {
   const { unHashedToken, hashedToken, tokenExpiry } =
     user.genrateTemroraryToken();
 
-  ((user.emailVerificationToken = hashedToken),
-    (user.emailVerificationExpiry = tokenExpiry));
+user.emailVerificationToken = hashedToken;
+user.emailVerificationExpiry = tokenExpiry;
 
-  user.save({ validateBeforesave: false });
+ await user.save({ validateBeforeSave: false });
 
   await sendEmail({
     email: user?.email,
     subject: "please verify youre email",
     mailgenContent: emailVerificationMailgenContent(
       user.username,
-      `${req.protocol}//${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`,
+      `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`,
     ),
   });
 
