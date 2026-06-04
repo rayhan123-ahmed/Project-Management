@@ -25,6 +25,9 @@ app.use(
 // import the routers
 import router from "./routes/healthcheack.routes.js";
 
+import authRoute from "./routes/auth.routes.js";
+
+app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/healthcheck',router)
 
 app.get("/instagram", (req, res) => {
